@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Statistiques Humidité</title>
+  <link rel="stylesheet" href="css/style.css"/>
+  <!-- D3.js -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.svg" alt="Logo" height="40"/>
+    <h1>Statistiques</h1>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="stats.html">Statistiques</a>
+      <a href="alerts.html">Alertes</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card" id="bar-chart-card">
+      <h2>Humidité moyenne par zone</h2>
+      <div id="bar-chart"></div>
+    </div>
+    <div class="card" id="pie-chart-card">
+      <h2>Répartition des zones critiques</h2>
+      <div id="pie-chart"></div>
+    </div>
+  </div>
+
+  <script type="module" src="js/stats.js"></script>
+</body>
+</html>

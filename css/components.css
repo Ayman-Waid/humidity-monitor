@@ -1,0 +1,67 @@
+/* Animations */
+@keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Carte de zone */
+  .zone-card {
+    background: var(--card-bg);
+    border-radius: 1rem;
+    padding: 1rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    animation: fadeInUp var(--fs) ease-out both;
+    transition: transform var(--fs) ease, box-shadow var(--fs) ease;
+  }
+  
+  .zone-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* États */
+  .status-ok {
+    border-left: 6px solid var(--ok);
+  }
+  .status-warn {
+    border-left: 6px solid var(--warn);
+  }
+  .status-crit {
+    border-left: 6px solid var(--crit);
+    animation: pulse 2s infinite;
+  }
+  
+  /* Contenu de la carte */
+  .zone-card h3 {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .zone-card p {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+  }
+  
+  .zone-card small {
+    color: #666;
+  }
+  

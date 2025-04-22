@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Alertes Humidité</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <header>
+    <img src="assets/logo.svg" alt="Logo" height="40"/>
+    <h1>Alertes Critiques</h1>
+    <nav>
+      <a href="index.html">Dashboard</a>
+      <a href="stats.html">Statistiques</a>
+      <a href="alerts.html">Alertes</a>
+    </nav>
+  </header>
+
+  <div class="container">
+    <div class="card">
+      <h2>Zones sous seuil critique</h2>
+      <ul id="alert-list" class="alert-list"></ul>
+    </div>
+  </div>
+
+  <script type="module" src="js/alerts.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "humidity-monitor-frontend",
+  "version": "1.0.0",
+  "description": "Front-end pour la surveillance de l'humidité",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server --port=3000 --open=./index.html"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "live-server": "^1.2.1"
+  },
+  "author": "",
+  "license": "ISC"
+}

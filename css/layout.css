@@ -1,0 +1,45 @@
+/* Header & Footer */
+header,
+footer {
+  backdrop-filter: blur(10px);
+  background: rgba(255, 255, 255, 0.3);
+  padding: 1rem 2rem;
+  text-align: center;
+}
+header h1 {
+  font-size: 1.75rem;
+  letter-spacing: 1px;
+}
+footer p {
+  font-size: 0.9rem;
+  color: #555;
+}
+
+/* Main layout */
+main {
+  flex: 1;
+  padding: 2rem;
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+}
+
+#zones-overview {
+  position: sticky;
+  top: 1rem;
+}
+
+/* Grille pour les cartes */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Zone détails */
+#zone-details {
+  background: var(--card-bg);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}

@@ -1,0 +1,37 @@
+/* Reset et variables globales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  :root {
+    --bg-gradient: linear-gradient(135deg, #e0f7fa 0%, #80deea 100%);
+    --card-bg: rgba(255, 255, 255, 0.8);
+    --text-dark: #333;
+    --font-primary: 'Inter', sans-serif;
+    --ok: #2e7d32;
+    --warn: #f57c00;
+    --crit: #c62828;
+    --fs: 0.4s;
+    --fz-base: 1rem;
+  }
+  
+  body {
+    font-family: var(--font-primary);
+    background: var(--bg-gradient);
+    color: var(--text-dark);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  h1, h2, h3 {
+    font-weight: 600;
+  }
+  
+  a {
+    color: var(--ok);
+    text-decoration: none;
+  }
+  

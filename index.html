@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Surveillance d’Humidité</title>
+
+  <!-- Police Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    /* Reset + variables */
+    * { margin:0; padding:0; box-sizing:border-box; }
+    :root {
+      --bg: #f0f4f8;
+      --sidebar: #036c4c;
+      --card: #ffffffdd;
+      --text: #333;
+      --ok: #2e7d32;
+      --warn: #f57c00;
+      --crit: #c62828;
+      --font: 'Inter', sans-serif;
+      --trans: .3s;
+    }
+    body {
+      display: flex; height:100vh;
+      background: var(--bg); color: var(--text);
+      font-family: var(--font);
+    }
+    /* Sidebar */
+    aside.sidebar {
+      width: 80px; background:var(--sidebar);
+      display:flex; flex-direction:column; align-items:center;
+      padding:1rem 0;
+    }
+    aside.sidebar .logo {
+      width:40px; margin-bottom:2rem;
+    }
+    aside.sidebar nav button {
+      background:none; border:none; color:#fff;
+      font-size:1.5rem; padding:1rem 0; cursor:pointer;
+      position:relative; width:100%; transition: background var(--trans);
+    }
+    aside.sidebar nav button span {
+      display:none; position:absolute; left:100%; top:50%;
+      transform:translateY(-50%);
+      background:var(--card); color:var(--text);
+      padding:2px 6px; border-radius:4px;
+      white-space:nowrap; font-size:.85rem;
+    }
+    aside.sidebar nav button:hover,
+    aside.sidebar nav button.active {
+      background: rgba(255,255,255,0.1);
+    }
+    aside.sidebar nav button:hover span {
+      display:block;
+    }
+
+    /* Container & views */
+    .container {
+      flex:1; overflow-y:auto; padding:1.5rem 2rem;
+    }
+    .view { animation: fadeIn var(--trans) both; }
+    .hidden { display:none; }
+
+    /* Dashboard */
+    .dashboard-grid {
+      display:grid;
+      grid-template-columns: 1fr 1.5fr;
+      gap:1.5rem;
+    }
+    .grid {
+      display:grid;
+      grid-template-columns: repeat(auto-fill,minmax(200px,1fr));
+      gap:1rem;
+    }
+    .zone-card {
+      background:var(--card); border-radius:8px;
+      padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      border-left:6px solid var(--ok);
+      cursor:pointer; transition: transform var(--trans), box-shadow var(--trans);
+    }
+    .zone-card.warn { border-left-color: var(--warn); }
+    .zone-card.crit {
+      border-left-color: var(--crit);
+      animation: pulse 1.5s infinite;
+    }
+    .zone-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+    .zone-card h3 { font-size:1.1rem; margin-bottom:.4rem; }
+    .zone-card p { font-size:1.6rem; margin-bottom:.4rem; }
+
+    .details-panel {
+      background:var(--card); border-radius:8px;
+      padding:1rem; box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      height:100%; overflow-y:auto;
+    }
+    .details-panel h3 { margin-bottom:.5rem; }
+    .details-panel .stats {
+      display:flex; gap:1rem; margin-bottom:1rem;
+    }
+    .details-panel .stats div {
+      flex:1; background:#fff; text-align:center;
+      padding:.5rem; border-radius:4px;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    }
+
+    /* Charts */
+    .chart-card {
+      background:var(--card); padding:1rem; border-radius:8px;
+      box-shadow:0 4px 12px rgba(0,0,0,0.05);
+      margin-bottom:1.5rem; overflow:visible;
+    }
+    .chart-card svg {
+      width:100%; height:300px;
+    }
+
+    /* Alertes */
+    .alert-list { list-style:none; }
+    .alert-list li {
+      background:var(--card); padding:.75rem 1rem;
+      margin-bottom:.5rem; border-left:4px solid var(--crit);
+      border-radius:4px;
+    }
+
+    /* Animations */
+    @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+    @keyframes pulse {
+      0%,100%{transform:scale(1);} 50%{transform:scale(1.03);}    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <img src="assets/logo.svg" alt="Logo" class="logo"/>
+    <nav>
+      <button data-view="dashboard" class="active">🏠<span>Dashboard</span></button>
+      <button data-view="stats">📊<span>Stats</span></button>
+      <button data-view="alerts">⚠️<span>Alertes</span></button>
+    </nav>
+  </aside>
+
+  <!-- Conteneur principal -->
+  <div class="container">
+    <!-- Dashboard -->
+    <section id="view-dashboard" class="view">
+      <h2>Tableau de Bord</h2>
+      <div class="dashboard-grid">
+        <div id="zone-cards" class="grid"></div>
+        <div id="zone-details" class="details-panel">
+          <p>Sélectionne une zone pour voir ses données.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Statistiques -->
+    <section id="view-stats" class="view hidden">
+      <h2>Statistiques</h2>
+      <div id="bar-chart" class="chart-card"></div>
+      <div id="pie-chart" class="chart-card"></div>
+    </section>
+
+    <!-- Alertes -->
+    <section id="view-alerts" class="view hidden">
+      <h2>Alertes Critiques</h2>
+      <ul id="alert-list" class="alert-list"></ul>
+    </section>
+  </div>
+
+  <audio id="audio-alert" src="assets/alert.mp3" preload="auto"></audio>
+
+  <!-- D3 pour SVG -->
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+  <script>
+    // -- Données globales --
+    let zonesData = [];
+
+    // -- Simulations API --
+    async function fetchZones() {
+      const count = Math.floor(Math.random()*3)+4;
+      const zones = [];
+      for(let i=1;i<=count;i++){
+        const h = Math.floor(Math.random()*101);
+        zones.push({ id:i, name:`Zone ${String.fromCharCode(64+i)}`, humidity:h, timestamp:new Date().toLocaleString() });
+      }
+      await new Promise(r=>setTimeout(r,200));
+      return zones;
+    }
+    async function fetchZoneDetails(id) {
+      const now=Date.now(), history=[];
+      for(let t=24;t>=0;t-=2){
+        const d=new Date(now - t*3600*1000);
+        history.push({ timestamp:d.toLocaleTimeString('fr-CH',{hour:'2-digit',minute:'2-digit'}), humidity:Math.floor(Math.random()*101) });
+      }
+      await new Promise(r=>setTimeout(r,200));
+      return history;
+    }
+
+    // -- Utilitaires --
+    function getStatusClass(h){ if(h<25) return 'crit'; if(h<50) return 'warn'; return 'ok'; }
+    function $(s){return document.querySelector(s);}    
+    function $all(s){return document.querySelectorAll(s);}    
+
+    // -- Rendus --
+    async function renderDashboard(){
+      const cards = $('#zone-cards'); cards.innerHTML='';
+      zonesData.forEach(z=>{
+        const div = document.createElement('div');
+        div.className=`zone-card ${getStatusClass(z.humidity)}`;
+        div.innerHTML=`<h3>${z.name}</h3><p>${z.humidity}%</p><small>${z.timestamp}</small>`;
+        div.onclick = ()=>renderZoneDetails(z);
+        cards.append(div);
+        if(z.humidity<25) $('#audio-alert').play();
+      });
+    }
+
+    async function renderZoneDetails(zone){
+      const panel = $('#zone-details'); panel.innerHTML='';
+      panel.innerHTML=
+        `<h3>${zone.name}</h3>
+         <p>Actuel : ${zone.humidity}%</p>
+         <p>Horodatage : ${zone.timestamp}</p>`;
+      const hist = await fetchZoneDetails(zone.id);
+      const vals=hist.map(d=>d.humidity);
+      const min=Math.min(...vals), max=Math.max(...vals), avg=Math.round(vals.reduce((a,b)=>a+b)/vals.length);
+      panel.innerHTML+=
+        `<div class="stats">
+          <div>Min : ${min}%</div>
+          <div>Max : ${max}%</div>
+          <div>Moy : ${avg}%</div>
+        </div>`;
+      // courbe SVG
+      const w=panel.clientWidth-40, h=200, m={top:10,right:20,bottom:30,left:40};
+      const svg = d3.select(panel).append('svg').attr('width','100%').attr('height',h);
+      const x = d3.scalePoint().domain(hist.map(d=>d.timestamp)).range([m.left,w-m.right]);
+      const y = d3.scaleLinear().domain([0,100]).range([h-m.bottom,m.top]);
+      const line = d3.line().x(d=>x(d.timestamp)).y(d=>y(d.humidity)).curve(d3.curveMonotoneX);
+      svg.append('g').attr('transform',`translate(0,${h-m.bottom})`).call(d3.axisBottom(x).tickSize(0).tickPadding(6));
+      svg.append('g').attr('transform',`translate(${m.left},0)`).call(d3.axisLeft(y));
+      svg.append('path').datum(hist).attr('fill','none').attr('stroke','#036c4c').attr('stroke-width',2).attr('d',line);
+    }
+
+    async function renderStats(){
+      $('#bar-chart').innerHTML=''; $('#pie-chart').innerHTML='';
+      // bar chart sur zonesData
+      const data = zonesData.map(z=>({ name:z.name, value:z.humidity }));
+      { const w=600,h=300,m={top:30,right:20,bottom:40,left:50};
+        const svg=d3.select('#bar-chart').append('svg').attr('width',w).attr('height',h);
+        const x=d3.scaleBand().domain(data.map(d=>d.name)).range([m.left,w-m.right]).padding(.2);
+        const y=d3.scaleLinear().domain([0,100]).range([h-m.bottom,m.top]);
+        svg.append('g').attr('transform',`translate(0,${h-m.bottom})`).call(d3.axisBottom(x));
+        svg.append('g').attr('transform',`translate(${m.left},0)`).call(d3.axisLeft(y));
+        svg.selectAll('.bar').data(data).join('rect')
+          .attr('class','bar').attr('x',d=>x(d.name))
+          .attr('y',d=>y(d.value)).attr('width',x.bandwidth())
+          .attr('height',d=>h-m.bottom-y(d.value));
+      }
+      // pie chart sur statut
+      const dist = ['ok','warn','crit'].map(status=>({ status, count: zonesData.filter(z=>getStatusClass(z.humidity)===status).length }));
+      { const w=300,h=300,r=Math.min(w,h)/2;
+        const svg=d3.select('#pie-chart').append('svg').attr('width',w).attr('height',h)
+          .append('g').attr('transform',`translate(${w/2},${h/2})`);
+        const pie=d3.pie().value(d=>d.count);
+        const arc=d3.arc().innerRadius(0).outerRadius(r-10);
+        const color=d3.scaleOrdinal().domain(dist.map(d=>d.status)).range(d3.schemeTableau10);
+        svg.selectAll('path').data(pie(dist)).join('path')
+          .attr('class','slice').attr('d',arc).attr('fill',d=>color(d.data.status));
+        svg.selectAll('text').data(pie(dist)).join('text')
+          .attr('transform',d=>`translate(${arc.centroid(d)})`)
+          .attr('dy','0.35em').attr('text-anchor','middle')
+          .text(d=>`${d.data.status} (${d.data.count})`);
+      }
+    }
+
+    async function renderAlerts(){
+      const list = $('#alert-list'); list.innerHTML='';
+      zonesData.filter(z=>z.humidity<25).forEach(z=>{
+        const li = document.createElement('li');
+        li.textContent = `${z.name} — ${z.humidity}% critique`;
+        list.append(li);
+        $('#audio-alert').play();
+      });
+    }
+
+    // -- Navigation & init --
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      // charge zonesData une seule fois
+      zonesData = await fetchZones();
+      const buttons = $all('.sidebar nav button');
+      buttons.forEach(b=>{
+        b.onclick = ()=>{
+          buttons.forEach(x=>x.classList.remove('active'));
+          b.classList.add('active');
+          $all('.view').forEach(v=>v.classList.add('hidden'));
+          document.getElementById('view-'+b.dataset.view).classList.remove('hidden');
+          if(b.dataset.view==='dashboard') renderDashboard();
+          if(b.dataset.view==='stats')     renderStats();
+          if(b.dataset.view==='alerts')    renderAlerts();
+        };
+      });
+      // vue par défaut
+      renderDashboard();
+    });
+  </script>
+</body>
+</html>
