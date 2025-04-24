@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .data-card {
+    @apply bg-white dark:bg-dark-panel p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300;
+  }
+
+  .loading-spinner {
+    @apply animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent;
+  }
+
+  .leaflet-container {
+    @apply bg-gray-50 dark:bg-dark-panel rounded-xl;
+  }
+}
+
+.dark .leaflet-tile {
+  filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(0.8);
+}
+
+.dark .leaflet-control-attribution {
+  @apply bg-dark-panel text-gray-300;
+}
