@@ -1,15 +1,13 @@
 {
-  "name": "humidity-monitor-frontend",
-  "version": "1.0.0",
-  "description": "Front-end pour la surveillance de l'humidité",
-  "main": "index.js",
-  "scripts": {
-    "start": "live-server --port=3000 --open=./index.html"
-  },
-  "devDependencies": {
-    "eslint": "^8.0.0",
-    "live-server": "^1.2.1"
-  },
-  "author": "",
-  "license": "ISC"
-}
+    "name": "agrimoist-pro",
+    "version": "2.0.0",
+    "private": true,
+    "scripts": {
+      "build:css": "tailwindcss -i ./src/css/styles.css -o ./public/assets/styles.css --minify",
+      "start": "live-server public"
+    },
+    "devDependencies": {
+      "tailwindcss": "^3.2.0"
+    }
+  }
+  
