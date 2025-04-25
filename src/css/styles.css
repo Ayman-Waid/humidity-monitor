@@ -3,23 +3,42 @@
 @tailwind utilities;
 
 @layer components {
-  .data-card {
-    @apply bg-white dark:bg-dark-panel p-6 rounded-xl shadow-md border border-gray-100 dark:border-gray-700 transition-all duration-300;
+  /* Loader full-screen */
+  .loader-overlay {
+    @apply fixed inset-0 bg-white/70 dark:bg-black/60 flex justify-center items-center z-50;
   }
 
+  /* Spinner */
   .loading-spinner {
-    @apply animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent;
+    @apply animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent;
   }
 
-  .leaflet-container {
-    @apply bg-gray-50 dark:bg-dark-panel rounded-xl;
+  /* Metric cards dégradé */
+  .metric-card {
+    @apply flex justify-between items-center p-6 rounded-2xl shadow-lg text-white bg-gradient-to-r;
+  }
+
+  /* Chart-cards à hauteur fixe */
+  .chart-card {
+    @apply bg-white dark:bg-dark-panel p-6 rounded-2xl shadow-md transition hover:shadow-lg h-112 relative overflow-hidden;
+  }
+  .chart-card canvas,
+  #map.leaflet-container {
+    @apply absolute top-0 left-0 w-full h-full;
+  }
+
+  /* Alert cards */
+  .alert-card {
+    @apply flex justify-between items-center bg-gray-100 dark:bg-dark-panel p-4 rounded-xl shadow-sm transition hover:shadow-md;
   }
 }
 
-.dark .leaflet-tile {
-  filter: invert(1) hue-rotate(180deg) brightness(0.8) contrast(0.8);
+/* Hauteur utilitaire : 28rem */
+@layer utilities {
+  .h-112 { height: 28rem; }
 }
 
-.dark .leaflet-control-attribution {
-  @apply bg-dark-panel text-gray-300;
+/* Map container */
+#map {
+  @apply rounded-2xl h-112;
 }
