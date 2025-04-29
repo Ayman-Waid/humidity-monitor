@@ -2,43 +2,40 @@
 @tailwind components;
 @tailwind utilities;
 
-@layer components {
-  /* Loader full-screen */
-  .loader-overlay {
-    @apply fixed inset-0 bg-white/70 dark:bg-black/60 flex justify-center items-center z-50;
-  }
-
-  /* Spinner */
-  .loading-spinner {
-    @apply animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent;
-  }
-
-  /* Metric cards dégradé */
-  .metric-card {
-    @apply flex justify-between items-center p-6 rounded-2xl shadow-lg text-white bg-gradient-to-r;
-  }
-
-  /* Chart-cards à hauteur fixe */
-  .chart-card {
-    @apply bg-white dark:bg-dark-panel p-6 rounded-2xl shadow-md transition hover:shadow-lg h-112 relative overflow-hidden;
-  }
-  .chart-card canvas,
-  #map.leaflet-container {
-    @apply absolute top-0 left-0 w-full h-full;
-  }
-
-  /* Alert cards */
-  .alert-card {
-    @apply flex justify-between items-center bg-gray-100 dark:bg-dark-panel p-4 rounded-xl shadow-sm transition hover:shadow-md;
-  }
+.loader-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
 }
 
-/* Hauteur utilitaire : 28rem */
-@layer utilities {
-  .h-112 { height: 28rem; }
+.loading-spinner {
+  @apply w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin;
 }
 
-/* Map container */
+.metric-card {
+  @apply p-6 rounded-xl bg-gradient-to-br text-white relative overflow-hidden;
+}
+
+.chart-card {
+  @apply bg-white dark:bg-dark-panel p-6 rounded-xl shadow h-[400px];
+}
+
+.alert-card {
+  @apply bg-white dark:bg-dark-panel p-4 rounded-lg shadow hover:shadow-md transition;
+}
+
+.dark .dark\:bg-dark-bg {
+  background-color: #1a202c;
+}
+
+.dark .dark\:bg-dark-panel {
+  background-color: #2d3748;
+}
+
+.dark .dark\:text-gray-200 {
+  color: #e2e8f0;
+}
+
 #map {
-  @apply rounded-2xl h-112;
+  height: 100%;
+  width: 100%;
+  min-height: 400px;
 }
