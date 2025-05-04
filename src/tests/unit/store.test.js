@@ -9,10 +9,9 @@ window.Alpine = Alpine
 describe('App Store', () => {
   let store
   
-  beforeAll(() => {
-    document.addEventListener('alpine:init', () => {
-      store = Alpine.store('app')
-    })
+  beforeEach(() => {
+    document.dispatchEvent(new Event('alpine:init'))
+    store = Alpine.store('app')
     Alpine.start()
   })
 
@@ -34,8 +33,17 @@ describe('App Store', () => {
       expect(zone.moisture).toBeGreaterThanOrEqual(0)
       expect(zone.moisture).toBeLessThanOrEqual(100)
       expect(zone).toHaveProperty('coords')
+      expect(zone).toHaveProperty('history')
+      expect(zone.history.length).toBe(24)
       expect(zone.coords.length).toBe(2)
     })
+  })
+
+  it('should load mock zones correctly', async () => {
+    await store.loadZones()
+    expect(store.isLoading).toBe(false)
+    expect(store.zones.length).toBe(8)
+    expect(store.selectedZoneId).toBe(store.zones[0]?.id)
   })
 
   it('should calculate average moisture correctly', async () => {
