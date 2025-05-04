@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="fr" x-data="app" x-cloak>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AgriMoist Pro 3.0 - Smart Agriculture Dashboard</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+  <script type="module" crossorigin src="/assets/main-BDtQCNI1.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/main-sq9kKSHH.css">
+</head>
+<body class="font-inter bg-gray-50 dark:bg-dark-bg text-gray-800 dark:text-gray-200">
+  <div class="flex flex-col md:flex-row min-h-screen">
+    <!-- Sidebar -->
+    <aside class="md:w-64 w-full md:h-screen bg-white dark:bg-dark-panel shadow-xl border-r border-gray-100 dark:border-gray-700">
+      <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+        <h1 class="text-xl font-bold flex items-center gap-2">
+          <span class="text-primary">🌱</span>
+          <span>AgriMoist Pro</span>
+        </h1>
+      </div>
+      <nav class="flex-1 p-4 space-y-2">
+        <template x-for="(nav, index) in navItems" :key="index">
+          <button
+            @click="currentView = nav.id"
+            :class="currentView === nav.id 
+              ? 'bg-primary/10 text-primary shadow-inner' 
+              : 'text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+            class="w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all relative"
+          >
+            <span x-text="nav.emoji"></span>
+            <span x-text="nav.label"></span>
+            <span x-show="nav.id === 'alerts' && activeAlerts.length"
+                  class="ml-auto px-2 py-1 text-xs rounded-full bg-critical text-white"
+                  x-text="activeAlerts.length"></span>
+          </button>
+        </template>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="flex-1 p-4 md:p-8">
+      <!-- Header -->
+      <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div>
+          <h2 class="text-2xl font-bold" x-text="currentViewLabel"></h2>
+          <p class="text-gray-500 dark:text-gray-400" x-text="currentViewDescription"></p>
+        </div>
+        <div class="flex items-center gap-4">
+          <button 
+            @click="toggleTheme()" 
+            class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            aria-label="Toggle theme"
+          >
+            <span x-text="isDark ? '🌞' : '🌙'"></span>
+          </button>
+          <button 
+            @click="loadZones()" 
+            class="px-4 py-2 bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition-colors flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Actualiser
+          </button>
+        </div>
+      </header>
+
+      <!-- Loading State -->
+      <div x-show="isLoading" class="flex justify-center items-center h-64">
+        <div class="loading-spinner"></div>
+      </div>
+
+      <!-- Dashboard View -->
+      <template x-if="!isLoading && currentView === 'dashboard'">
+        <div class="space-y-8">
+          <!-- Stats Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="data-card">
+              <div class="flex items-center justify-between">
+                <div>
+                  <p class="text-sm text-gray-500">Zones Actives</p>
+                  <p class="text-3xl font-bold" x-text="zones.length"></p>
+                </div>
+                <div class="p-3 bg-primary/10 rounded-xl">🌾</div>
+              </div>
+            </div>
+            <!-- Other stats cards... -->
+          </div>
+
+          <!-- Charts -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div class="chart-container">
+              <h3 class="text-lg font-semibold mb-4">Historique de la Zone</h3>
+              <canvas id="zoneChart"></canvas>
+            </div>
+            <div class="chart-container">
+              <h3 class="text-lg font-semibold mb-4">Comparaison des Zones</h3>
+              <canvas id="aggregateChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </template>
+
+      <!-- Map View -->
+      <template x-if="!isLoading && currentView === 'map'">
+        <div class="chart-container p-0 overflow-hidden">
+          <div id="map" class="h-[600px] rounded-xl"></div>
+        </div>
+      </template>
+    </main>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</body>
+</html>
