@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.loader-overlay {
+  @apply fixed inset-0 bg-black/50 flex items-center justify-center z-50;
+}
+
+.loading-spinner {
+  @apply w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin;
+}
+
+.metric-card {
+  @apply p-6 rounded-xl bg-gradient-to-br text-white relative overflow-hidden;
+}
+
+.chart-card {
+  @apply bg-white dark:bg-dark-panel p-6 rounded-xl shadow h-[400px];
+}
+
+.alert-card {
+  @apply bg-white dark:bg-dark-panel p-4 rounded-lg shadow hover:shadow-md transition;
+}
+
+.dark .dark\:bg-dark-bg {
+  background-color: #1a202c;
+}
+
+.dark .dark\:bg-dark-panel {
+  background-color: #2d3748;
+}
+
+.dark .dark\:text-gray-200 {
+  color: #e2e8f0;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  min-height: 400px;
+}
