@@ -1,0 +1,10 @@
+Hu
+Humidity=45%
+Humidity=45%
+Humidity=45%
+Humidity=45%
+Humidity=45%
+Humidity=45%
+Humidity=45%
+Humidity=45%
+Humidity=45%
