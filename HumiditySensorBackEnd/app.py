@@ -5,9 +5,9 @@ app = Flask(__name__)
 @app.route("/data")
 def get_data():
     try:
-        with open("HumiditySensorBackEnd/data.txt", "r") as f:
+        with open("data.txt", "r") as f:  # <-- Make sure path is correct
             lines = f.readlines()
-        return jsonify(lines=[line.strip() for line in lines[-10:]])  # return last 10 lines
+        return jsonify(lines=[line.strip() for line in lines[-10:]])  # Last 10 lines
     except FileNotFoundError:
         return jsonify(lines=[])
 
