@@ -1,14 +1,21 @@
-import { defineConfig } from 'vite'
+// vite.config.js
+import { defineConfig } from 'vite';
+import { fileURLToPath, URL } from 'node:url';
 
 export default defineConfig({
-  build: {
-    outDir: 'public',
-    emptyOutDir: true,
-    rollupOptions: {
-      input: {
-        main: './index.html'
-      }
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  publicDir: 'public'
-})
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: './src/tests/setup.js',
+    server: {
+      fs: {
+        allow: ['..']
+      }
+    }
+  }
+});
