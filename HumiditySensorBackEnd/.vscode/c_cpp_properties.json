@@ -10,6 +10,8 @@
             "includePath": [
                 "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/include",
                 "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/src",
+                "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/.pio/libdeps/uno/DHT sensor library",
+                "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/.pio/libdeps/uno/Adafruit Unified Sensor",
                 "C:/Users/Administrateur/.platformio/packages/framework-arduino-avr/cores/arduino",
                 "C:/Users/Administrateur/.platformio/packages/framework-arduino-avr/variants/standard",
                 "C:/Users/Administrateur/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
@@ -24,6 +26,8 @@
                 "path": [
                     "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/include",
                     "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/src",
+                    "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/.pio/libdeps/uno/DHT sensor library",
+                    "C:/Users/Administrateur/Documents/PlatformIO/Projects/HumiditySensorBackEnd/.pio/libdeps/uno/Adafruit Unified Sensor",
                     "C:/Users/Administrateur/.platformio/packages/framework-arduino-avr/cores/arduino",
                     "C:/Users/Administrateur/.platformio/packages/framework-arduino-avr/variants/standard",
                     "C:/Users/Administrateur/.platformio/packages/framework-arduino-avr/libraries/EEPROM/src",
