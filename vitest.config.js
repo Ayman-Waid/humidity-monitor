@@ -1,6 +1,5 @@
-// vite.config.js
-import { defineConfig } from 'vite';
-import { fileURLToPath, URL } from 'node:url';
+import { defineConfig } from 'vite'
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   resolve: {
@@ -12,10 +11,6 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './src/tests/setup.js',
-    server: {
-      fs: {
-        allow: ['..']
-      }
-    }
+    threads: false // Disable multi-threading to avoid serialization issues
   }
-});
+})

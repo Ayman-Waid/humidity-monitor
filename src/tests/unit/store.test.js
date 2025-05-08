@@ -6,15 +6,13 @@ Alpine.plugin(persist)
 
 describe('Alpine Store', () => {
   let store
-  
+
   beforeEach(() => {
-    // Reset Alpine before each test
     global.Alpine.stores = {}
     document.dispatchEvent(new Event('alpine:init'))
     store = Alpine.store('app')
     Alpine.start()
-    
-    // Mock localStorage for persist plugin
+
     global.localStorage = {
       getItem: vi.fn(),
       setItem: vi.fn(),
@@ -40,7 +38,7 @@ describe('Alpine Store', () => {
   describe('Data Loading', () => {
     it('should load mock zones correctly', async () => {
       await store.loadZones()
-      
+
       expect(store.isLoading).toBe(false)
       expect(store.zones.length).toBe(8)
       expect(store.selectedZoneId).toBe(store.zones[0].id)
@@ -50,12 +48,12 @@ describe('Alpine Store', () => {
     it('should handle errors during loading', async () => {
       const originalMock = mockZones
       mockZones = vi.fn(() => { throw new Error('Mock error') })
-      
+
       await store.loadZones()
-      
+
       expect(store.isLoading).toBe(false)
       expect(store.zones).toEqual([])
-      
+
       mockZones = originalMock
     })
   })
@@ -68,7 +66,7 @@ describe('Alpine Store', () => {
     it('should calculate average moisture correctly', () => {
       const calculatedAvg = store.averageMoisture
       const expectedAvg = store.zones.reduce((sum, z) => sum + z.moisture, 0) / store.zones.length
-      
+
       expect(calculatedAvg).toBeCloseTo(expectedAvg)
       expect(calculatedAvg).toBeGreaterThanOrEqual(0)
       expect(calculatedAvg).toBeLessThanOrEqual(100)
@@ -90,7 +88,7 @@ describe('Alpine Store', () => {
       await store.loadZones()
       store.zones[0].moisture = 25 // Below critical threshold
       store.checkAlerts()
-      
+
       expect(store.activeAlerts).toContainEqual(
         expect.objectContaining({
           id: store.zones[0].id,
@@ -103,7 +101,7 @@ describe('Alpine Store', () => {
       await store.loadZones()
       store.zones[1].moisture = 35 // Below warning but above critical
       store.checkAlerts()
-      
+
       expect(store.activeAlerts).toContainEqual(
         expect.objectContaining({
           id: store.zones[1].id,

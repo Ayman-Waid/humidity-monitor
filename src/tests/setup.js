@@ -1,13 +1,13 @@
 import { expect, vi } from 'vitest'
 import * as matchers from '@testing-library/jest-dom/matchers'
 import { JSDOM } from 'jsdom'
-import { readFileSync } from 'fs';
-import { resolve } from 'path';
+import { readFileSync } from 'fs'
+import { resolve } from 'path'
 
-const html = readFileSync(resolve(__dirname, '../../public/index.html'), 'utf-8');
-const dom = new JSDOM(html);
-global.document = dom.window.document;
-global.window = dom.window;
+const html = readFileSync(resolve(__dirname, '../../public/index.html'), 'utf-8')
+const dom = new JSDOM(html)
+global.document = dom.window.document
+global.window = dom.window
 
 // Add DOM matchers
 expect.extend(matchers)
@@ -26,10 +26,7 @@ if (!global.Alpine) {
         currentViewLabel: 'Dashboard',
         currentViewDescription: 'Overview of your agricultural data',
         isLoading: false,
-        isDark: false,
-        toggleTheme: vi.fn(),
-        loadZones: vi.fn(),
-        setView: vi.fn()
+        isDark: false
       }
     },
     store: (name, callback) => {
@@ -40,14 +37,12 @@ if (!global.Alpine) {
       }
       return global.Alpine.stores[name]
     },
-    start: vi.fn(),
-    plugin: vi.fn(),
-    // Add directive mocks if needed
-    directive: vi.fn()
+    start: () => {},
+    plugin: () => {}
   }
 }
 
-// Mock Chart.js (unchanged)
+// Mock Chart.js
 vi.mock('chart.js', () => ({
   Chart: vi.fn().mockImplementation(() => ({
     destroy: vi.fn(),
@@ -63,42 +58,30 @@ vi.mock('chart.js', () => ({
       format: vi.fn()
     }
   }
-}));
+}))
 
 // Enhanced Leaflet mock
 global.L = {
-  map: vi.fn().mockReturnValue({
-    setView: vi.fn(),
-    eachLayer: vi.fn(),
-    removeLayer: vi.fn()
-  }),
-  tileLayer: vi.fn().mockReturnValue({
-    addTo: vi.fn()
-  }),
-  marker: vi.fn().mockReturnValue({
-    addTo: vi.fn(),
-    bindPopup: vi.fn()
-  }),
-  // Add more Leaflet methods as needed
-  icon: vi.fn(),
-  latLng: vi.fn()
+  map: vi.fn().mockReturnValue({}),
+  tileLayer: vi.fn().mockReturnValue({}),
+  marker: vi.fn().mockReturnValue({})
 }
 
 // Helper to render navigation items
 function renderNavItems() {
-  const nav = document.createElement('nav');
-  nav.className = 'flex-1 p-4 space-y-2';
-  
+  const nav = document.createElement('nav')
+  nav.className = 'flex-1 p-4 space-y-2'
+
   global.Alpine.stores.app.navItems.forEach(item => {
-    const button = document.createElement('button');
-    button.textContent = item.label;
-    button.className = 'nav-item';
-    button.dataset.view = item.view;
-    nav.appendChild(button);
-  });
-  
-  document.body.appendChild(nav);
+    const button = document.createElement('button')
+    button.textContent = item.label
+    button.className = 'nav-item'
+    button.dataset.view = item.view
+    nav.appendChild(button)
+  })
+
+  document.body.appendChild(nav)
 }
 
 // Initialize the mock navigation
-renderNavItems();
+renderNavItems()
