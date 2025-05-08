@@ -1,9 +1,12 @@
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class SensorDataServer extends UnicastRemoteObject implements SensorDataInterface {
-    private LinkedList<String> dataList = new LinkedList<>();  // Buffer to store last 10 sensor readings
+    private final Map<String, String> sensorDataMap = new HashMap<>();
 
     protected SensorDataServer() throws RemoteException {
         super();
@@ -11,21 +14,51 @@ public class SensorDataServer extends UnicastRemoteObject implements SensorDataI
 
     @Override
     public void storeSensorData(String data) {
-        if (dataList.size() >= 10) dataList.removeFirst();  // Keep only the last 10 entries
-        dataList.add(data);                                  // Add new data
-        System.out.println("Data received from Python: " + data);
+        String[] parts = data.split(",");
+        if (parts.length == 3) {
+            String key = parts[0] + "," + parts[1]; // zone,sensor
+            sensorDataMap.put(key, parts[2]);
+            System.out.println("Stored: Zone " + parts[0] + " Sensor " + parts[1] + " = " + parts[2]);
+        }
     }
 
     @Override
     public String[] getLastSensorData() {
-        return dataList.toArray(new String[0]);  // Return data as array
+        return sensorDataMap.values().toArray(new String[0]);
+    }
+
+    @Override
+    public String getSensorValue(int zone, int sensor) {
+        String key = zone + "," + sensor;
+        return sensorDataMap.getOrDefault(key, "No data");
+    }
+
+    @Override
+    public void startSaving() throws RemoteException {
+        sendFlaskCommand("start");
+    }
+
+    @Override
+    public void stopSaving() throws RemoteException {
+        sendFlaskCommand("stop");
+    }
+
+    private void sendFlaskCommand(String command) {
+        try {
+            URL url = new URL("http://localhost:5000/" + command);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.getResponseCode();
+            System.out.println("Flask command sent: " + command);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public static void main(String[] args) {
         try {
-            java.rmi.registry.LocateRegistry.createRegistry(1099);  // Start RMI registry
             SensorDataServer server = new SensorDataServer();
-            java.rmi.Naming.rebind("SensorData", server);           // Bind service name
+            java.rmi.Naming.rebind("SensorData", server);
             System.out.println("RMI server is running...");
         } catch (Exception e) {
             e.printStackTrace();
