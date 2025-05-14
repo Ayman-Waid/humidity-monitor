@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="fr"
-      x-data
-      x-bind:class="{ dark: $store.app.isDark }"
+      x-data="$store.app"
+      x-bind:class="{ dark: isDark }"
       x-cloak
       x-init="
-        $store.app.loadZones();
-        setInterval(() => $store.app.loadZones(), 1000);
+        loadZones();
+        setInterval(() => loadZones(), 1000);
       ">
 <head>
   <meta charset="UTF-8" />
@@ -15,15 +15,11 @@
   <!-- Inter font -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
 
-  <!-- Configure Tailwind pour le dark-mode via classe -->
+  <!-- Tailwind config -->
   <script>
     tailwind.config = {
       darkMode: 'class',
-      theme: {
-        extend: {
-          colors: { primary: '#3B82F6' }
-        }
-      }
+      theme: { extend: { colors: { primary: '#3B82F6' } } }
     }
   </script>
   <script src="https://cdn.tailwindcss.com"></script>
@@ -42,28 +38,23 @@
   <header class="bg-white dark:bg-gray-900 shadow-lg">
     <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
       <h1 class="text-3xl font-bold text-primary">AgriMoist Pro</h1>
-      <div class="flex space-x-3">
-        <button @click="$store.app.toggleTheme()"
-                class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-          <span x-text="$store.app.isDark ? '🌞' : '🌙'" class="text-xl"></span>
-        </button>
-      </div>
+      
     </div>
   </header>
 
   <!-- LOADER -->
-  <div x-show="$store.app.isLoading" class="loader-overlay" x-cloak>
+  <div x-show="isLoading" class="loader-overlay" x-cloak>
     <div class="loading-spinner"></div>
   </div>
 
   <!-- MAIN CONTENT -->
-  <main class="max-w-7xl mx-auto p-6 space-y-8" x-show="!$store.app.isLoading">
+  <main class="max-w-7xl mx-auto p-6 space-y-8" x-show="!isLoading">
 
     <!-- NAVIGATION -->
     <nav class="flex space-x-6 border-b pb-4">
       <template x-for="view in ['dashboard','analytics','alerts','map']" :key="view">
-        <button @click="$store.app.currentView = view"
-                :class="{'text-primary border-b-4 border-primary': $store.app.currentView===view}"
+        <button @click="currentView = view"
+                :class="{'text-primary border-b-4 border-primary': currentView===view}"
                 class="pb-2 font-semibold hover:text-primary transition capitalize">
           <span x-text="view"></span>
         </button>
@@ -71,13 +62,13 @@
     </nav>
 
     <!-- DASHBOARD -->
-    <section x-show="$store.app.currentView==='dashboard'">
+    <section x-show="currentView==='dashboard'">
       <!-- Top cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <template x-for="(m,i) in [
-          { label:'Zones actives',    value:$store.app.zones.length,                  icon:'🌾', from:'green-400', to:'green-600' },
-          { label:'Humidité moyenne', value:`${$store.app.averageMoisture.toFixed(1)}%`, icon:'💧', from:'blue-400',  to:'blue-600' },
-          { label:'Alertes actives',  value:$store.app.activeAlerts.length,            icon:'⚠️', from:'red-400',   to:'red-600' }
+          { label:'Zones actives',    value:zones.length,                   icon:'🌾', from:'green-400', to:'green-600' },
+          { label:'Humidité moyenne', value:`${averageMoisture.toFixed(1)}%`, icon:'💧', from:'blue-400',  to:'blue-600' },
+          { label:'Alertes actives',  value:activeAlerts.length,           icon:'⚠️', from:'red-400',   to:'red-600' }
         ]" :key="i">
           <div :class="`bg-gradient-to-tr from-${m.from} to-${m.to} text-white p-6 rounded-2xl shadow-lg flex justify-between items-center`">
             <div>
@@ -92,13 +83,13 @@
       <!-- Liste des zones -->
       <h2 class="text-2xl font-semibold mb-4">Zones</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="zone in $store.app.zones" :key="zone.id">
+        <template x-for="zone in zones" :key="zone.id">
           <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md flex flex-col justify-between">
             <div>
               <h3 class="font-semibold text-lg" x-text="zone.name"></h3>
               <p class="mt-1" x-text="`Humidité: ${zone.moisture}%`"></p>
             </div>
-            <button @click="$store.app.selectedZoneId=zone.id; $store.app.currentView='zoneDetail'"
+            <button @click="selectedZoneId=zone.id; currentView='zoneDetail'"
                     class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
               Voir détails
             </button>
@@ -108,7 +99,7 @@
     </section>
 
     <!-- ANALYTICS -->
-    <section x-show="$store.app.currentView==='analytics'">
+    <section x-show="currentView==='analytics'">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
           <h2 class="font-semibold mb-2">Statut global</h2>
@@ -122,17 +113,17 @@
     </section>
 
     <!-- ALERTES -->
-    <section x-show="$store.app.currentView==='alerts'">
+    <section x-show="currentView==='alerts'">
       <h2 class="text-2xl font-semibold mb-4">Alertes</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="alert in $store.app.activeAlerts" :key="alert.id">
+        <template x-for="alert in activeAlerts" :key="alert.id">
           <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md flex justify-between items-center">
             <div>
               <h3 class="font-semibold" x-text="alert.name"></h3>
               <p class="text-sm" x-text="`Type: ${alert.type}`"></p>
               <p class="text-sm" x-text="`Humidité: ${alert.moisture}%`"></p>
             </div>
-            <button @click="$store.app.selectedZoneId=alert.id; $store.app.currentView='zoneDetail'"
+            <button @click="selectedZoneId=alert.id; currentView='zoneDetail'"
                     class="px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
               Détails
             </button>
@@ -142,7 +133,7 @@
     </section>
 
     <!-- CARTE -->
-    <section x-show="$store.app.currentView==='map'">
+    <section x-show="currentView==='map'">
       <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">Carte des capteurs</h2>
         <div id="map"></div>
@@ -150,11 +141,11 @@
     </section>
 
     <!-- DÉTAIL ZONE -->
-    <section x-show="$store.app.currentView==='zoneDetail'">
+    <section x-show="currentView==='zoneDetail'">
       <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg space-y-4">
         <div class="flex justify-between items-center">
-          <h2 class="text-2xl font-semibold" x-text="$store.app.selectedZone.name"></h2>
-          <p class="text-lg" x-text="`Humidité: ${$store.app.selectedZone.latest}%`"></p>
+          <h2 class="text-2xl font-semibold" x-text="selectedZone.name"></h2>
+          <p class="text-lg" x-text="`Humidité: ${selectedZone.latest}%`"></p>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <div>
