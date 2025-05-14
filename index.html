@@ -61,7 +61,7 @@
 
     <!-- NAVIGATION -->
     <nav class="flex space-x-6 border-b pb-4">
-      <template x-for="view in ['dashboard','analytics','alerts','zones','map']" :key="view">
+      <template x-for="view in ['dashboard','analytics','alerts','map']" :key="view">
         <button @click="$store.app.currentView = view"
                 :class="{'text-primary border-b-4 border-primary': $store.app.currentView===view}"
                 class="pb-2 font-semibold hover:text-primary transition capitalize">
@@ -135,25 +135,6 @@
             <button @click="$store.app.selectedZoneId=alert.id; $store.app.currentView='zoneDetail'"
                     class="px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
               Détails
-            </button>
-          </div>
-        </template>
-      </div>
-    </section>
-
-    <!-- ZONES -->
-    <section x-show="$store.app.currentView==='zones'">
-      <h2 class="text-2xl font-semibold mb-4">Toutes les zones</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="zone in $store.app.zones" :key="zone.id">
-          <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md flex flex-col justify-between">
-            <div>
-              <h3 class="font-semibold text-lg" x-text="zone.name"></h3>
-              <p class="mt-1" x-text="`Humidité: ${zone.moisture}%`"></p>
-            </div>
-            <button @click="$store.app.selectedZoneId=zone.id; $store.app.currentView='zoneDetail'"
-                    class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
-              Voir détails
             </button>
           </div>
         </template>
