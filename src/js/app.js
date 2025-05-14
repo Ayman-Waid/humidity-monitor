@@ -7,7 +7,7 @@ window.Alpine = Alpine
 
 // Génération mock : deux captures + latest + history
 const mockZones = () =>
-  Array.from({ length: 8 }, (_, i) => ({
+  Array.from({ length: 4 }, (_, i) => ({
     id: i + 1,
     name: `Zone ${i + 1}`,
     moisture: Math.floor(Math.random() * 100),
