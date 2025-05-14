@@ -3,7 +3,10 @@
       x-data
       x-bind:class="{ dark: $store.app.isDark }"
       x-cloak
-      x-init="$store.app.loadZones()">
+      x-init="
+        $store.app.loadZones();
+        setInterval(() => $store.app.loadZones(), 1000);
+      ">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -18,17 +21,12 @@
       darkMode: 'class',
       theme: {
         extend: {
-          colors: {
-            primary: '#3B82F6'
-          }
+          colors: { primary: '#3B82F6' }
         }
       }
     }
   </script>
-  <!-- CDN Tailwind -->
   <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Leaflet CSS -->
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 
   <style>
@@ -45,10 +43,6 @@
     <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
       <h1 class="text-3xl font-bold text-primary">AgriMoist Pro</h1>
       <div class="flex space-x-3">
-        <button @click="$store.app.loadZones()"
-                class="flex items-center space-x-1 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
-          <span class="text-xl">🔄</span><span>Actualiser</span>
-        </button>
         <button @click="$store.app.toggleTheme()"
                 class="p-2 bg-gray-200 dark:bg-gray-700 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition">
           <span x-text="$store.app.isDark ? '🌞' : '🌙'" class="text-xl"></span>
@@ -76,9 +70,9 @@
       </template>
     </nav>
 
-    <!-- VUES -->
-    <!-- Dashboard -->
+    <!-- DASHBOARD -->
     <section x-show="$store.app.currentView==='dashboard'">
+      <!-- Top cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <template x-for="(m,i) in [
           { label:'Zones actives',    value:$store.app.zones.length,                  icon:'🌾', from:'green-400', to:'green-600' },
@@ -94,19 +88,26 @@
           </div>
         </template>
       </div>
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
-          <h2 class="font-semibold mb-2">Tendance de la zone</h2>
-          <div class="w-full h-[320px]"><canvas id="zoneChart" class="w-full h-full"></canvas></div>
-        </div>
-        <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
-          <h2 class="font-semibold mb-2">Comparaison des zones</h2>
-          <div class="w-full h-[320px]"><canvas id="comparisonChart" class="w-full h-full"></canvas></div>
-        </div>
+
+      <!-- Liste des zones -->
+      <h2 class="text-2xl font-semibold mb-4">Zones</h2>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <template x-for="zone in $store.app.zones" :key="zone.id">
+          <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md flex flex-col justify-between">
+            <div>
+              <h3 class="font-semibold text-lg" x-text="zone.name"></h3>
+              <p class="mt-1" x-text="`Humidité: ${zone.moisture}%`"></p>
+            </div>
+            <button @click="$store.app.selectedZoneId=zone.id; $store.app.currentView='zoneDetail'"
+                    class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+              Voir détails
+            </button>
+          </div>
+        </template>
       </div>
     </section>
 
-    <!-- Analytics -->
+    <!-- ANALYTICS -->
     <section x-show="$store.app.currentView==='analytics'">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
@@ -120,7 +121,7 @@
       </div>
     </section>
 
-    <!-- Alertes -->
+    <!-- ALERTES -->
     <section x-show="$store.app.currentView==='alerts'">
       <h2 class="text-2xl font-semibold mb-4">Alertes</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -140,7 +141,7 @@
       </div>
     </section>
 
-    <!-- Zones -->
+    <!-- ZONES -->
     <section x-show="$store.app.currentView==='zones'">
       <h2 class="text-2xl font-semibold mb-4">Toutes les zones</h2>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -159,7 +160,7 @@
       </div>
     </section>
 
-    <!-- Carte -->
+    <!-- CARTE -->
     <section x-show="$store.app.currentView==='map'">
       <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
         <h2 class="text-2xl font-semibold mb-4">Carte des capteurs</h2>
@@ -167,7 +168,7 @@
       </div>
     </section>
 
-    <!-- Détail zone -->
+    <!-- DÉTAIL ZONE -->
     <section x-show="$store.app.currentView==='zoneDetail'">
       <div class="bg-white dark:bg-gray-900 p-6 rounded-2xl shadow-lg space-y-4">
         <div class="flex justify-between items-center">
@@ -189,7 +190,6 @@
 
   </main>
 
-  <!-- Scripts -->
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script type="module" src="/src/js/app.js"></script>
 </body>
