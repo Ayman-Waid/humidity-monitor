@@ -1,67 +1,85 @@
-# Humidity Sensor Monitoring System
+# AgriMoist Pro Backend - Humidity Sensor Monitoring System
 
-This project involves reading humidity data from sensors, sending it to a Java RMI server, and saving it into a text file that can be viewed via a Flask-based web interface.
+This backend project handles reading humidity data from Arduino-connected sensors, transferring data through Python and Java RMI layers, and exposing sensor data via a lightweight HTTP server for frontend consumption. It supports real-time data reading, remote start/stop of data saving, and data querying.
 
 ## Project Structure
-	### Python Files
-		- `app.py`: Flask app that receives sensor data, communicates with the Java RMI backend, and exposes endpoints to start/stop saving data and to view saved data.
-		- `read_serial.py`: Continuously reads humidity data from the Arduino via serial, decodes it, and updates shared memory variables used by `app.py`.
-		- `sensor_data.txt`: File where sensor data (with timestamps) is saved when enabled via `/start`.
-		- `gateway_server.py`: Starts a Py4J gateway to bridge Python and Java (if used separately).
 
-	### Java Files
-		- `SensorDataInterface.java`: RMI interface defining methods like `storeSensorData()`, `getSensorValue()`, `startSaving()`, and `stopSaving()`.
-		- `SensorDataServer.java`: Implements the RMI server, stores incoming data, and makes HTTP requests to Flask to start/stop saving.
-		- `SensorValueClient.java`: Java RMI client that fetches humidity values for specific zone/sensor.
-		- `DataControlClient.java`: Java client to remotely start or stop saving the data file via RMI.
+### Python Components
+- `app.py`: Flask server that:
+  - Reads serial data from Arduino in a background thread.
+  - Sends sensor data to Java RMI backend via Py4J gateway.
+  - Provides HTTP endpoints to start/stop saving data and for diagnostics.
+- `read_serial.py`: (optional) Reads serial data continuously; integrated now into `app.py`.
+- `sensor_data.txt`: Log file for saved sensor data with timestamps when saving is enabled.
+- Py4J Gateway: embedded within `SensorDataGateway.java` (Java side) to receive calls from Python.
+
+### Java Components
+- `SensorDataInterface.java`: RMI interface defining methods to store and retrieve sensor data, control saving, etc.
+- `SensorDataServer.java`: RMI server implementation that stores sensor data in memory and manages saving commands by calling Flask HTTP endpoints.
+- `SensorDataGateway.java`: Py4J gateway server bridging Python Flask and Java RMI.
+- `SensorValueClient.java`: Java RMI client to query sensor values per zone and sensor.
+- `DiagnosticClient.java`: Java client to remotely start/stop saving data via RMI.
+- `SensorValueHTTPServer.java`: Lightweight HTTP server exposing REST endpoints for sensor data and aggregated zone info (including alerts).
 
 ## Requirements
 
-	### Python
-		- Python 3.x
-		- Install required Python libraries:
-	  		- Flask
-	  		- py4j
-	  		- pyserial
+### Python
+- Python 3.x
+- Install dependencies with:
+  ```
+  pip install flask py4j pyserial
+  ```
 
-	  Install using pip:
-	  	pip install flask py4j pyserial
-
-	### Java
-		- Java JDK 8 or above
-		- RMI Registry (Usually comes with the JDK)
-
--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+### Java
+- Java JDK 8 or newer
+- RMI Registry (comes with JDK)
+- Py4J jar file (tested with py4j-0.10.9.9.jar)
 
 ## Running the Project
 
-1. Start the Java RMI server:
-   - Run the following commands to start the Java server:
-     rmiregistry
-     java SensorDataServer
-     java -cp ".;py4j-0.10.9.9.jar" SensorDataGateway
+1. Start RMI Registry:
+   ```
+   rmiregistry
+   ```
+2. Run Java RMI server:
+   ```
+   java SensorDataServer
+   ```
+3. Run Java Py4J gateway server:
+   ```
+   java -cp ".;py4j-0.10.9.9.jar" SensorDataGateway
+   ```
+4. Run Flask app to read serial data and forward it:
+   ```
+   python app.py
+   ```
+5. (Optional) Run Proteus simulation file `SRD.pdsprj`.
 
-2. Run the Flask app:
-     python app.py
+6. Use diagnostic client to start/stop data saving remotely:
+   ```
+   java DiagnosticClient
+   ```
+7. Access sensor data via HTTP REST API on port 8080:
+   - Single sensor: `http://localhost:8080/api/sensor?zone=0&sensor=1`
+   - Zones summary: `http://localhost:8080/api/zones`
 
-2. Run the simulation in Proteus:
-   - Open SRD.pdsprj
+## File Format for Saved Data
 
-3. Diagnostic:
-     java DiagnosticClient
+The `sensor_data.txt` file format (CSV) is:
 
-4. View the data:
-   - To view the data in the sensor_data.txt file, visit:
-     http://localhost:5000/diagnotic
-
-## File Format
-
-The sensor_data.txt file will store data in the following format:
+```
 Zone,Sensor,Humidity,Timestamp
 0,0,19.35,2025-05-08 15:34:12
 1,0,87.10,2025-05-08 15:34:15
+```
 
+## Notes
+
+- Sensor data is sent from Arduino as a single byte encoding zone, sensor, and humidity.
+- Flask and Java communicate directly via Py4J, avoiding intermediate files.
+- The HTTP server provides easy data access for frontend developers with JSON responses and CORS enabled.
+- Alerts are generated based on humidity thresholds (e.g., critical if < 15%).
 
 ## License
 
-This project is open-source by Ahmed MOUHIB.
+Open-source roject by Ahmed MOUHIB.
