@@ -65,7 +65,7 @@ This backend project handles reading humidity data from Arduino-connected sensor
 
 ## File Format for Saved Data
 
-The `sensor_data.txt` file format (CSV) is:
+The `data.txt` file format is:
 
 ```
 Zone,Sensor,Humidity,Timestamp
