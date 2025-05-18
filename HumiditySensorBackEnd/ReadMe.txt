@@ -53,7 +53,7 @@ This backend project handles reading humidity data from Arduino-connected sensor
    ```
    python app.py
    ```
-5. (Optional) Run Proteus simulation file `SRD.pdsprj`.
+5. Run Proteus simulation file `SRD.pdsprj`.
 
 6. Use diagnostic client to start/stop data saving remotely:
    ```
