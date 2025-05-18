@@ -10,7 +10,7 @@ This backend project handles reading humidity data from Arduino-connected sensor
   - Sends sensor data to Java RMI backend via Py4J gateway.
   - Provides HTTP endpoints to start/stop saving data and for diagnostics.
 - `read_serial.py`: (optional) Reads serial data continuously; integrated now into `app.py`.
-- `sensor_data.txt`: Log file for saved sensor data with timestamps when saving is enabled.
+- `data.txt`: Log file for saved sensor data with timestamps when saving is enabled.
 - Py4J Gateway: embedded within `SensorDataGateway.java` (Java side) to receive calls from Python.
 
 ### Java Components
