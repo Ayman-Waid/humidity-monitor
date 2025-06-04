@@ -38,7 +38,6 @@
   <header class="bg-white dark:bg-gray-900 shadow-lg">
     <div class="max-w-7xl mx-auto flex justify-between items-center py-4 px-6">
       <h1 class="text-3xl font-bold text-primary">AgriMoist Pro</h1>
-      
     </div>
   </header>
 
@@ -52,23 +51,23 @@
 
     <!-- NAVIGATION -->
     <nav class="flex space-x-6 border-b pb-4">
-      <template x-for="view in ['dashboard','analytics','alerts','map']" :key="view">
-        <button @click="currentView = view"
-                :class="{'text-primary border-b-4 border-primary': currentView===view}"
-                class="pb-2 font-semibold hover:text-primary transition capitalize">
-          <span x-text="view"></span>
-        </button>
-      </template>
-    </nav>
+  <template x-for="view in ['dashboard','zoneDetail']" :key="view">
+    <button @click="currentView = view"
+            :class="{'text-primary border-b-4 border-primary': currentView===view}"
+            class="pb-2 font-semibold hover:text-primary transition capitalize">
+      <span x-text="view"></span>
+    </button>
+  </template>
+</nav>
 
     <!-- DASHBOARD -->
     <section x-show="currentView==='dashboard'">
       <!-- Top cards -->
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <template x-for="(m,i) in [
-          { label:'Zones actives',    value:zones.length,                   icon:'🌾', from:'green-400', to:'green-600' },
-          { label:'Humidité moyenne', value:`${averageMoisture.toFixed(1)}%`, icon:'💧', from:'blue-400',  to:'blue-600' },
-          { label:'Alertes actives',  value:activeAlerts.length,           icon:'⚠️', from:'red-400',   to:'red-600' }
+          { label:'Zones actives',    value: zones.length,                   icon:'🌾', from:'green-400', to:'green-600' },
+          { label:'Humidité moyenne', value: `${averageMoisture.toFixed(1)}%`, icon:'💧', from:'blue-400',  to:'blue-600' },
+          { label:'Alertes actives',  value: activeAlerts.length,           icon:'⚠️', from:'red-400',   to:'red-600' }
         ]" :key="i">
           <div :class="`bg-gradient-to-tr from-${m.from} to-${m.to} text-white p-6 rounded-2xl shadow-lg flex justify-between items-center`">
             <div>
@@ -89,7 +88,7 @@
               <h3 class="font-semibold text-lg" x-text="zone.name"></h3>
               <p class="mt-1" x-text="`Humidité: ${zone.moisture}%`"></p>
             </div>
-            <button @click="selectedZoneId=zone.id; currentView='zoneDetail'"
+            <button @click="selectedZoneId = zone.id; currentView = 'zoneDetail'"
                     class="mt-4 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
               Voir détails
             </button>
@@ -98,47 +97,47 @@
       </div>
     </section>
 
-    <!-- ANALYTICS -->
-    <section x-show="currentView==='analytics'">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
-          <h2 class="font-semibold mb-2">Statut global</h2>
-          <div class="w-full h-[320px]"><canvas id="statusChart" class="w-full h-full"></canvas></div>
-        </div>
-        <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
-          <h2 class="font-semibold mb-2">Tendance capture</h2>
-          <div class="w-full h-[320px]"><canvas id="trendChart" class="w-full h-full"></canvas></div>
-        </div>
-      </div>
-    </section>
+<!-- ANALYTICS -->
+<section x-show="currentView==='analytics'">
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
+      <!-- Title removed -->
+      <div class="w-full h-[320px]"><canvas id="statusChart" class="w-full h-full"></canvas></div>
+    </div>
+    <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
+      <!-- Title removed -->
+      <div class="w-full h-[320px]"><canvas id="trendChart" class="w-full h-full"></canvas></div>
+    </div>
+  </div>
+</section>
 
-    <!-- ALERTES -->
-    <section x-show="currentView==='alerts'">
-      <h2 class="text-2xl font-semibold mb-4">Alertes</h2>
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <template x-for="alert in activeAlerts" :key="alert.id">
-          <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md flex justify-between items-center">
-            <div>
-              <h3 class="font-semibold" x-text="alert.name"></h3>
-              <p class="text-sm" x-text="`Type: ${alert.type}`"></p>
-              <p class="text-sm" x-text="`Humidité: ${alert.moisture}%`"></p>
-            </div>
-            <button @click="selectedZoneId=alert.id; currentView='zoneDetail'"
-                    class="px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
-              Détails
-            </button>
-          </div>
-        </template>
+<!-- ALERTES -->
+<section x-show="currentView==='alerts'">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <template x-for="alert in activeAlerts" :key="alert.id">
+      <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-md flex justify-between items-center">
+        <div>
+          <h3 class="font-semibold" x-text="alert.name"></h3>
+          <p class="text-sm" x-text="`Type: ${alert.type}`"></p>
+          <p class="text-sm" x-text="`Humidité: ${alert.moisture}%`"></p>
+        </div>
+        <button @click="selectedZoneId = alert.id; currentView = 'zoneDetail'"
+                class="px-3 py-1 bg-primary text-white rounded-lg hover:bg-primary/90 transition">
+          Détails
+        </button>
       </div>
-    </section>
+    </template>
+  </div>
+</section>
 
-    <!-- CARTE -->
-    <section x-show="currentView==='map'">
-      <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
-        <h2 class="text-2xl font-semibold mb-4">Carte des capteurs</h2>
-        <div id="map"></div>
-      </div>
-    </section>
+<!-- CARTE -->
+<section x-show="currentView==='map'">
+  <div class="bg-white dark:bg-gray-900 p-4 rounded-2xl shadow-lg">
+    <!-- Title removed -->
+    <div id="map"></div>
+  </div>
+</section>
+
 
     <!-- DÉTAIL ZONE -->
     <section x-show="currentView==='zoneDetail'">

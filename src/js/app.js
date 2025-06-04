@@ -5,7 +5,6 @@ import { createLineChart, createBarChart, createPieChart } from './charts.js'
 Alpine.plugin(persist)
 window.Alpine = Alpine
 
-// Génération mock : deux captures + latest + history
 const mockZones = () =>
   Array.from({ length: 4 }, (_, i) => ({
     id: i + 1,
@@ -37,25 +36,47 @@ document.addEventListener('alpine:init', () => {
       return this.zones.find(z => z.id === this.selectedZoneId) || {}
     },
 
-    async loadZones() {
-      this.isLoading = true
-      try {
-        this.zones = mockZones()
-        if (!this.selectedZoneId) this.selectedZoneId = this.zones[0]?.id
-        this.checkAlerts()
-        if (this.currentView === 'dashboard') {
-          this.initZoneChart()
-          this.initComparisonChart()
-          this.initMap()
+  async loadZones() {
+    this.isLoading = true
+    try {
+      const res = await fetch('http://localhost:8080/api/zones')
+      if (!res.ok) throw new Error('Erreur de chargement des zones')
+      const data = await res.json()
+      this.zones = data.zones.map(z => {
+        const sensor1 = z.sensorValues?.[0] ?? z.moisture
+        const sensor2 = z.sensorValues?.[1] ?? z.moisture
+        return {
+          ...z,
+          latest: Math.max(sensor1, sensor2),
+          capture1: Array.from({ length: 24 }, () => sensor1 + (Math.random() * 10 - 5)),
+          capture2: Array.from({ length: 24 }, () => sensor2 + (Math.random() * 10 - 5)),
+          history: Array.from({ length: 24 }, () => z.moisture + (Math.random() * 10 - 5))
         }
-        if (this.currentView === 'analytics') this.initAnalyticsCharts()
-        if (this.currentView === 'map') this.initMap()
-        if (this.currentView === 'zoneDetail') this.initZoneDetailCharts()
-      } finally {
-        this.isLoading = false
-      }
-    },
+      })
+      this.activeAlerts = data.activeAlerts || []
+      if (!this.selectedZoneId) this.selectedZoneId = this.zones[0]?.id
+    } catch (e) {
+      console.error('Chargement échoué, fallback aux données mock')
+      this.zones = mockZones()
+      if (!this.selectedZoneId) this.selectedZoneId = this.zones[0]?.id
+      this.checkAlerts()
+    }
 
+    try {
+      if (this.currentView === 'dashboard') {
+        this.initZoneChart()
+        this.initComparisonChart()
+        this.initMap()
+      }
+      if (this.currentView === 'analytics') this.initAnalyticsCharts()
+      if (this.currentView === 'map') this.initMap()
+      if (this.currentView === 'zoneDetail') this.initZoneDetailCharts()
+    } catch (initErr) {
+      console.error('Error initializing charts:', initErr)
+    }
+
+    this.isLoading = false
+  },
     checkAlerts() {
       this.activeAlerts = this.zones
         .filter(z => z.moisture <= this.thresholds.warning)
@@ -64,7 +85,6 @@ document.addEventListener('alpine:init', () => {
           type: z.moisture <= this.thresholds.critical ? 'critique' : 'avertissement'
         }))
     },
-
 
     initZoneChart() {
       const ctx = document.getElementById('zoneChart')?.getContext('2d')
@@ -97,7 +117,6 @@ document.addEventListener('alpine:init', () => {
       const warn = this.zones.filter(z=>z.moisture>this.thresholds.critical && z.moisture<=this.thresholds.warning).length
       const norm = this.zones.length - crit - warn
 
-      // Pie
       const ctx1 = document.getElementById('statusChart')?.getContext('2d')
       if (ctx1) {
         if (!this.charts.status) {
@@ -107,7 +126,7 @@ document.addEventListener('alpine:init', () => {
           this.charts.status.update()
         }
       }
-      // Trend
+
       const ctx2 = document.getElementById('trendChart')?.getContext('2d')
       if (ctx2) {
         const data = this.zones[0]?.history || []
@@ -128,13 +147,12 @@ document.addEventListener('alpine:init', () => {
       }
       this.map.eachLayer(l=>l instanceof L.Marker && this.map.removeLayer(l))
       this.zones.forEach(z => {
-        L.marker(z.coords).addTo(this.map).bindPopup(`<b>${z.name}</b><br>Humidité: ${z.moisture}%`)
+        L.marker(z.coords).addTo(this.map).bindPopup(`<b>${z.name}</b><br>Humidité: ${z.moisture.toFixed(1)}%`)
       })
     },
 
     initZoneDetailCharts() {
       const z = this.selectedZone, hrs = this.generateHours()
-      // capture1
       const c1 = document.getElementById('zoneChart1')?.getContext('2d')
       if (c1) {
         if (!this.charts.d1) {
@@ -143,7 +161,7 @@ document.addEventListener('alpine:init', () => {
           this.charts.d1.data.datasets[0].data = z.capture1; this.charts.d1.update()
         }
       }
-      // capture2
+
       const c2 = document.getElementById('zoneChart2')?.getContext('2d')
       if (c2) {
         if (!this.charts.d2) {
@@ -156,7 +174,6 @@ document.addEventListener('alpine:init', () => {
 
     toggleTheme() {
       this.isDark = !this.isDark
-      // Grâce au x-bind:class sur <html>, la classe "dark" est appliquée/enlevée
     },
 
     generateHours() {
