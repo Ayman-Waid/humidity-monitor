@@ -60,6 +60,9 @@ This backend project handles reading humidity data from Arduino-connected sensor
    java DiagnosticClient
    ```
 7. Access sensor data via HTTP REST API on port 8080:
+```
+   & "C:\Program Files\Java\jdk-17\bin\java.exe" SensorValueHTTPServer
+```
    - Single sensor: `http://localhost:8080/api/sensor?zone=0&sensor=1`
    - Zones summary: `http://localhost:8080/api/zones`
 
@@ -82,4 +85,4 @@ Zone,Sensor,Humidity,Timestamp
 
 ## License
 
-Open-source roject by Ahmed MOUHIB.
+Open-source project by Ahmed MOUHIB.
